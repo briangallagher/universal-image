@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: universal-workbench
+  labels:
+    app: universal-workbench
+spec:
+  restartPolicy: Never
+  containers:
+    - name: universal
+      image: universal-image:dev
+      imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 8888
+      # No command/args: defaults to workbench notebook via CMD
+      resources:
+        limits:
+          cpu: "2"
+          memory: 4Gi
+        requests:
+          cpu: "500m"
+          memory: 1Gi

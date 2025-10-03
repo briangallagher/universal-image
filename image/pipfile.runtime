@@ -1,0 +1,55 @@
+# Annotated runtime Pipfile mapping → universal image sources
+# Legend:
+# - [minimal] provided by minimal workbench base
+# - [universal] installed in universal Dockerfile
+# - [runtime-only] not included (can be added if needed)
+
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[[source]]
+url = "https://download.pytorch.org/whl/cu128"
+verify_ssl = true
+name = "pytorch-cu128"
+
+[packages]
+# torch from cu128 index → [universal]
+torch = {version = "==2.8.0", index = "pytorch-cu128"}
+# core training stack → [universal]
+accelerate = "==1.10.0"
+transformers = "==4.55.2"
+peft = "==0.17.0"
+tqdm = "==4.67.1"
+datasets = "==4.0.0"
+pydantic = ">=2.11.7"
+aiofiles = "==24.1.0"
+protobuf = "<6.0.0,>=5.28.0"
+simpleeval = "<1.0,>=0.9.13"
+safetensors = "==0.6.2"
+packaging = "==25.0"
+pyyaml = "==6.0.2"
+py-cpuinfo = "==9.0.0"
+numba = "==0.61.2"
+rich = "==14.1.0"
+bitsandbytes = ">=0.45.3"
+liger-kernel = "==0.5.10"
+sentencepiece = "<0.3,>=0.1.99"
+tokenizers = "==0.21.4"
+training-hub = "==0.2.0"
+trl = "==0.21.0"
+deipspeed = ">=0.14.3"
+async-timeout = "==4.0.3"
+# tensorboard in runtime: optional in universal (Jupyter base includes tensorboard in many workflows) → [runtime-only]
+tensorboard = "2.19.0"
+# networking/HF helpers → [universal]
+aiohttp = "==3.12.15"
+hf-xet = "==1.1.8"
+huggingface-hub = "==0.34.4"
+psutil = "==7.0.0"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"

@@ -1,0 +1,47 @@
+RPM/OS packages catalog
+
+Image: minimal-wb-image (base) — from minimal-wb-image/ubi9-python-3.12/Dockerfile.cuda
+- UBI 9 base, repo re-enabled via COPY ubi.repo
+- dnf -y upgrade with --nobest --skip-broken
+- perl
+- mesa-libGL
+- skopeo
+- CUDA 12.8 stack inherited from BASE_IMAGE (quay.io/opendatahub/odh-base-image-cuda-py312-ubi9:v12.8)
+- PDF export deps via utils/install_pdf_deps.sh (likely texlive, pandoc; exact list external)
+- oc (OpenShift CLI) downloaded from mirror.openshift.com (see binaries file)
+
+Image: runtime-image (to be layered on top) — from runtime-image/Dockerfile
+Repositories enabled
+- NVIDIA CUDA repo: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/cuda-rhel9.repo
+- Mellanox OFED repo: https://linux.mellanox.com/public/repo/mlnx_ofed/latest/rhel9.5/mellanox_mlnx_ofed.repo
+
+CUDA toolchain packages (pinned)
+- cuda-cudart-12-8-12.8.57-1
+- cuda-compat-12-8-3:570.172.08-1.el9
+- cuda-nvcc-12-8-12.8.61-1
+
+RDMA/IB packages
+- libibverbs-utils
+- infiniband-diags
+- libibumad3
+- librdmacm
+- librdmacm-utils
+- rdma-core
+- mlnx-tools
+
+NVIDIA driver capability env (kept)
+- NVIDIA_REQUIRE_CUDA with 12.8, driver floors including 570.172.08
+
+Overlaps and potential conflicts
+- Both images are UBI9; minimal performs system upgrade; runtime adds CUDA repos and IB/OFED packages. Ensure repo configuration does not conflict with base.
+- Minimal base includes CUDA 12.8; runtime CUDA packages must match 12.8 pins (they do). Avoid duplicating or downgrading CUDA components; prefer relying on base where present.
+
+Duplicates handling principle
+- Keep OS packages from minimal as-is; only add missing runtime OS packages.
+
+Suggestions
+- Mirror runtime’s repo enabling and exact package versions to maintain parity with current runtime behavior.
+- Preserve NVIDIA_REQUIRE_CUDA and CUDA version pins.
+
+Notes
+- install_pdf_deps.sh contents are external to this workspace; enumerate in SBOM during build if required.

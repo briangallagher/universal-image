@@ -1,0 +1,9 @@
+Architectures: linux/amd64 only, or also linux/arm64?
+
+Architectures: linux/arm64, linux/x86_64
+
+Architecture on mac:                Apple M1 Pro:           Arm64
+Architecture on OpenShift:          Predominant linux/x86_64 (amd64)
+
+The base image is amd64
+

@@ -1,0 +1,21 @@
+Binary/executable artifacts catalog
+
+Image: minimal-wb-image (base)
+- CUDA 12.8 toolchain/runtime inherited from BASE_IMAGE
+- oc (OpenShift CLI) — downloaded from OCP stable; version not pinned in Dockerfile
+- Jupyter startup script: start-notebook.sh (ENTRYPOINT)
+- PDF export tooling via utils/install_pdf_deps.sh (likely texlive, pandoc binaries)
+
+Image: runtime-image (additional tooling)
+- CUDA toolchain binaries via pinned RPMs (e.g., nvcc 12.8.61, cudart 12.8.57) — ensure alignment with base CUDA 12.8
+
+Overlaps and potential conflicts
+- CUDA 12.8 exists in base; avoid duplicating or conflicting versions from runtime layer.
+- No oc in runtime; minimal provides oc.
+
+Constraints and requirements
+- Preserve NVIDIA driver requirement env per runtime (NVIDIA_REQUIRE_CUDA).
+- Follow runtime’s current approach to external repos and tool versions.
+
+Notes
+- ENTRYPOINT/COMMAND will be provided by the runtime platform at execution time per requirement; universal image should not rely on a fixed ENTRYPOINT when used in runtime mode.

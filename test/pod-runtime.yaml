@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: universal-runtime
+  labels:
+    app: universal-runtime
+spec:
+  restartPolicy: Never
+  containers:
+    - name: universal
+      image: universal-image:dev
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: RUNTIME_MODE
+          value: "true"
+      command: ["python"]
+      args: ["-c", "import torch; print('torch import ok, cuda_available=', torch.cuda.is_available())"]
+      resources:
+        limits:
+          cpu: "2"
+          memory: 4Gi
+          nvidia.com/gpu: 1
+        requests:
+          cpu: "500m"
+          memory: 1Gi
+          nvidia.com/gpu: 1

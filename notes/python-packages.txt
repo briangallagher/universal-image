@@ -1,0 +1,69 @@
+Python dependencies catalog
+
+Image: minimal-wb-image (base) — from minimal-wb-image/ubi9-python-3.12/pyproject.toml
+- odh-jupyter-trash-cleanup==0.1.1
+- jupyterlab==4.4.7
+- jupyter-server~=2.17.0
+- jupyter-server-proxy~=4.4.0
+- jupyter-server-terminals~=0.5.3
+- jupyterlab-git~=0.51.2
+- nbdime~=4.0.2
+- nbgitpuller~=1.2.2
+- wheel~=0.45.1
+- setuptools~=80.9.0
+
+Build tools installed via pip at build time (not runtime requirements)
+- micropipenv[toml]==1.9.0
+- uv==0.8.12
+
+Image: runtime-image (to be layered on top) — from runtime-image/Pipfile + Dockerfile
+- torch==2.8.0 (index: pytorch-cu128)
+- accelerate==1.10.0
+- transformers==4.55.2
+- peft==0.17.0
+- tqdm==4.67.1
+- datasets==4.0.0
+- pydantic>=2.11.7
+- aiofiles==24.1.0
+- protobuf>=5.28.0,<6.0.0
+- simpleeval>=0.9.13,<1.0
+- safetensors==0.6.2
+- packaging==25.0
+- pyyaml==6.0.2
+- py-cpuinfo==9.0.0
+- numba==0.61.2
+- rich==14.1.0
+- bitsandbytes>=0.45.3
+- liger-kernel==0.5.10
+- sentencepiece>=0.1.99,<0.3
+- tokenizers==0.21.4
+- training-hub==0.2.0
+- trl==0.21.0
+- deepspeed>=0.14.3
+- async-timeout==4.0.3
+- tensorboard==2.19.0
+- aiohttp==3.12.15
+- hf-xet==1.1.8
+- huggingface-hub==0.34.4
+- psutil==7.0.0
+- Additional runtime pip installs in Dockerfile:
+  - wheel (unpinned)
+  - flash-attn==2.8.3
+  - NVIDIA CUDA Python wheels (cu12.8 series: nccl, cublas, cudnn, curand, cusolver, cusparse, cusparselt, nvjitlink, nvtx, runtime, cupti)
+
+Overlaps and potential conflicts
+- wheel: minimal pins wheel~=0.45.1; runtime installs wheel unpinned. Prefer base version; avoid re-installing.
+- No torch in minimal; torch 2.8.0 is added only by runtime layer (no direct conflict).
+- Resolver/process mismatch: minimal uses uv with strict hashes; runtime uses micropipenv + pip. Mixing flows can cause env drift if not sequenced carefully.
+
+Duplicates handling principle (per requirement)
+- If a package exists in minimal, do not re-install in universal image; rely on minimal’s version.
+- Only add runtime-specific packages on top of minimal; avoid downgrades of minimal’s pins.
+
+Suggestions to resolve differences
+- Install runtime packages after minimal using one resolver path (pip) while preserving minimal-installed files; do not re-run uv on the combined set.
+- Keep minimal’s wheel pinned; skip explicit wheel install in runtime step.
+- Ensure torch 2.8.0 and flash-attn 2.8.3 align with CUDA 12.8 stack chosen in OS layer (see RPMs file).
+
+Notes
+- minimal’s transitive dependencies are locked via its pylock.toml (not listed here, as it’s sourced externally at build).
