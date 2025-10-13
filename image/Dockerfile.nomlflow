@@ -13,17 +13,9 @@
 
 FROM quay.io/opendatahub/workbench-images:cuda-jupyter-minimal-ubi9-python-3.12-2025a_20250903
 
-LABEL name="universal:py312-cuda128-torch280" \
-      summary="Universal CUDA 12.8 Python 3.12 image with PyTorch 2.8.0" \
-      description="Universal image combining minimal Jupyter workbench and runtime ML stack (CUDA 12.8, PyTorch 2.8.0, FlashAttention 2.8.3) on UBI9" \
-      io.k8s.display-name="Universal CUDA 12.8 Python 3.12 (Workbench + Runtime)" \
-      io.k8s.description="Universal image: Jupyter workbench by default; runtime when command provided. Includes RDMA/IB libs, Torch 2.8.0 cu128, FlashAttention 2.8.3."
-
-## TODO: Add license file
-# COPY LICENSE.md /licenses/cuda-license.md
-
 # For OS installs we need elevated privileges; base may default to 1001
 USER 0
+
 WORKDIR /opt/app-root/bin
 
 # Keep NVIDIA driver capability constraints consistent with runtime image behavior
@@ -134,7 +126,6 @@ RUN pip install --retries 5 --timeout 300 --no-cache-dir \
     py-cpuinfo==9.0.0 \
     numba==0.61.2 \
     rich==14.1.0 \
-    tensorboard==2.19.0 \
     bitsandbytes>=0.45.3 \
     liger-kernel==0.5.10 \
     "sentencepiece>=0.1.99,<0.3" \
@@ -146,7 +137,6 @@ RUN pip install --retries 5 --timeout 300 --no-cache-dir \
     aiohttp==3.12.15 \
     hf-xet==1.1.8 \
     huggingface-hub==0.34.4 \
-    mlflow==3.4.0 \
     psutil==7.0.0 \
  && chmod -R g+w /opt/app-root/lib/python3.12/site-packages \
  && fix-permissions /opt/app-root -P

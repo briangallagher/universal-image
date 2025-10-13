@@ -86,11 +86,12 @@ else
 	fi
 	echo "[buildx] Loading locally for $SELECTED_PLATFORM (no push)"
 	set -x
+	# Stream image tar to docker load to avoid closed-pipe issues with --load
 	docker buildx build \
 		--platform "$SELECTED_PLATFORM" \
 		"${ALL_TAG_ARGS[@]}" \
-		--load \
-		"$BUILD_CONTEXT"
+		--output=type=docker,dest=- \
+		"$BUILD_CONTEXT" | docker load
 	set +x
 	echo "[done] Loaded locally: $FULL_PRIMARY_TAG ${EXTRA_TAGS:+and $EXTRA_TAGS}"
 fi
